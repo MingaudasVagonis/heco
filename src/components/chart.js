@@ -85,6 +85,7 @@ class Chart extends React.Component {
 								},
 							],
 						}}
+						fromZero={true}
 						transparent={true}
 						width={sys_width}
 						height={220}

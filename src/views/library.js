@@ -43,7 +43,7 @@ const Library = ({navigate}) => {
 	const onSelect = async index => {
 
 		if(await changeDefault(counters[index].label)){
-			
+
 			lightVibrate()
 
 			setSelected(index)
@@ -68,7 +68,7 @@ const Library = ({navigate}) => {
 
 	const addCounter = async _ => {
 		if (!label || label.length < 3) {
-			popup?.current.call('error', "Counter's label is invalid")
+			popup.current?.call('error', "Counter's label is invalid")
 			return
 		}
 
@@ -76,7 +76,7 @@ const Library = ({navigate}) => {
 			const ids = await getIDs()
 
 			if (ids.includes(label)) {
-				popup?.current.call('error', 'Counter already exists')
+				popup.current?.call('error', 'Counter already exists')
 				return
 			}
 
@@ -89,18 +89,18 @@ const Library = ({navigate}) => {
 			onChangeText('')
 		} catch (err) {
 			console.log(err)
-			popup?.current.call('error', 'Failed to create the counter')
+			popup.current?.call('error', 'Failed to create the counter')
 		}
 	}
 
 	return (
-		<View>
+		<View style={styles.container}>
+			<StatusBar backgroundColor="black" barStyle="light-content" />
 			<ScrollView
 				contentInsetAdjustmentBehavior="automatic"
 				overScrollMode="never"
 				showsVerticalScrollIndicator={false}>
 				<View style={styles.container}>
-					<StatusBar backgroundColor="black" barStyle="light-content" />
 					<View style={styles.input_container}>
 						<TextInput
 							style={styles.input}

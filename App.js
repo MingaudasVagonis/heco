@@ -10,17 +10,13 @@ enableScreens()
 const Stack = createNativeStackNavigator()
 
 const options = {
-          headerShown: false,
-        }
+  headerShown: false,
+}
 
 const App = _ => (
   <NavigationContainer>
     <Stack.Navigator>
-      <Stack.Screen
-        name="Home"
-        component={Home}
-        options={options}
-      />
+      <Stack.Screen name="Home" component={Home} options={options} />
       <Stack.Screen
         name="Library"
         component={Library}

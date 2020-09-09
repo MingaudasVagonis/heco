@@ -9,6 +9,7 @@ import {
 	Pressable,
 	StatusBar,
 	AppState,
+	ScrollView,
 	DeviceEventEmitter,
 } from 'react-native'
 import {
@@ -29,166 +30,154 @@ import {
 	update,
 	changeDefault,
 	commit,
-	getDefault
+	getDefault,
 } from '@logic/buckets'
 import HMap from '@components/heco_map.js'
 import {phCheck, phCheckAndRequest} from '@logic/device.js'
 import PopUp from '@components/popup.js'
 import moment from 'moment'
 import LottieView from 'lottie-react-native'
-//import { useFocusEffect } from '@react-navigation/native';
+import {useFocusEffect} from '@react-navigation/native'
+import TimeChart from '@components/time_chart.js'
+const Home = ({navigation}) => {
+	const bucket = React.useRef(undefined)
+	const alert = React.useRef(undefined)
 
-class Home extends React.Component {
-	constructor(props) {
-		super(props)
+	const [locationEnabled, setLocationEnabled] = React.useState(false)
+	const [{data, count}, setCounterData] = React.useState({
+		data: {},
+		count: undefined,
+	})
+	const [focus, setFocus] = React.useState('week')
+	const [loading, setLoading] = React.useState(false)
 
-		this.lastDefault = undefined
+	React.useEffect(_ => {
+		AppState.addEventListener('change', handleAppStateChange)
+		requestLocation()
+		return _ => AppState.removeEventListener('change', handleAppStateChange)
+	}, [])
 
-		this.state = {
-			count: undefined,
-			data: {
-				statistics: {},
-				entries: {},
-			},
-			focus: 'week',
-			loading: true,
+	useFocusEffect(
+		React.useCallback(_ => {
+			changeBucket()
+		}, []),
+	)
+
+	const changeBucket = async _ => {
+		const def = await getDefault()
+
+		if (!bucket.current || def !== bucket.current.counter.label) await sync(def)
+	}
+
+	const sync = async label => {
+		setLoading(true)
+
+		try {
+			bucket.current = await getBucket(label)
+
+			const _data = await sortBucket(bucket.current.counter)
+
+			setCounterData({data: _data, count: bucket.current.today})
+		} catch {
+			alert.current?.call('error', 'Failed to load the counter')
+		} finally {
+			setLoading(false)
 		}
 	}
 
-	componentDidMount() {
-		AppState.addEventListener('change', this.handleAppStateChange.bind(this))
-
-		this.date = moment()
-
-		this._loadBucket()
-		
-	}
-
-	async _loadBucket(){
-
-		this.bucket = await getBucket(await getDefault())
-
-		const data = await sortBucket(this.bucket.counter)
-
-		const locationEnabled = await phCheck('LOCATION')
-
-		this.setState({count: this.bucket.today, data, locationEnabled, loading: false})
-	}
-
-	componentWillUnmount() {
-		AppState.removeEventListener('change', this.handleAppStateChange.bind(this))
-		clearTimeout(this._timeout)
-	}
-
-	add() {
-
-		commit(this.bucket)
+	const add = _ => {
+		commit(bucket.current)
 
 		lightVibrate()
 
-		this.props.navigation.navigate('Library')
+		navigation.navigate('Library')
 	}
 
-	requestLocation() {
-
-		if(this.state.loading)
-			return
-
+	const requestLocation = _ => {
 		lightVibrate()
 
 		phCheckAndRequest(
 			'LOCATION',
-			_ => this.setState({locationEnabled: true}),
-			msg => this._alert?.call('error', msg),
+			_ => setLocationEnabled(true),
+			msg => alert.current?.call('error', msg),
 		)
 	}
 
-	onChangeFocus(focus) {
-		this._timeout = setTimeout(_ => this.setState({focus}), 500)
-	}
-
-	shouldComponentUpdate = (nextProps, nextState) =>
-		this.state.count !== nextState.count || this.state.focus !== nextState.focus
-
-	async alter(change) {
-		const {count, data} = this.state
-
-		if (count + change < 0 || !this.bucket) return
+	const alter = async change => {
+		if (count + change < 0 || !bucket.current) return
 
 		lightVibrate()
 
-		const updated = await update(data, this.bucket.counter, this.date, change)
+		const updated = await update(data, bucket.current.counter, moment(), change)
 
-		this.setState(prev => ({count: (prev.count || 0) + change, data: updated}))
+		setCounterData({data: updated, count: (count || 0) + change})
 	}
 
-	handleAppStateChange(nextAppState) {
-		if (nextAppState === 'inactive') commit(this.bucket)
+	const handleAppStateChange = nextAppState => {
+		if (nextAppState === 'inactive') commit(bucket.current)
+		if (nextAppState === 'active' && bucket.current)
+			sync(bucket.current.counter.label)
 	}
 
-	render() {
-		const {count, data, focus, locationEnabled, loading} = this.state
-
-		return (
-			<View style={styles.container}>
-				<StatusBar backgroundColor="black" barStyle="light-content" />
-				<SafeAreaView style={styles.safe_container}>
-					<View style={styles.header_row}>
-						<View style={styles.row}>
-							<Image
-								style={styles.logo}
-								source={require('@assets/icons/logo.png')}
-							/>
-							<Text style={styles.title}>heco</Text>
-						</View>
-						{loading ? (
-							<LottieView
-								source={require('@assets/loader.json')}
-								autoPlay
-								loop
-								style={styles.loader}
-							/>
-						) : null}
+	return (
+		<View style={styles.container}>
+			<StatusBar backgroundColor="black" barStyle="light-content" />
+			<SafeAreaView style={styles.safe_container}>
+				<View style={styles.header_row}>
+					<View style={styles.row}>
+						<Image
+							style={styles.logo}
+							source={require('@assets/icons/logo.png')}
+						/>
+						<Text style={styles.title}>heco</Text>
 					</View>
-					<Pressable style={styles.add_button} onPress={this.add.bind(this)}>
-						<View style={styles.add_button}>
-							<Image
-								style={styles.add_icon}
-								source={require('@assets/icons/icon_menu.png')}
-							/>
-						</View>
+					{loading ? (
+						<LottieView
+							source={require('@assets/loader.json')}
+							autoPlay
+							loop
+							style={styles.loader}
+						/>
+					) : null}
+				</View>
+				<Pressable style={styles.add_button} onPress={add}>
+					<View style={styles.add_button}>
+						<Image
+							style={styles.add_icon}
+							source={require('@assets/icons/icon_menu.png')}
+						/>
+					</View>
+				</Pressable>
+				<Statistics data={data.statistics} onChangeFocus={setFocus} />
+				<View style={styles.action_container}>
+					<Pressable onPress={alter.bind(undefined, -1)}>
+						<Image
+							style={styles.counter_button}
+							source={require('@assets/icons/minus.png')}
+						/>
 					</Pressable>
-					<Statistics
-						data={data.statistics}
-						onChangeFocus={this.onChangeFocus.bind(this)}
-					/>
-					<View style={styles.action_container}>
-						<Pressable onPress={this.alter.bind(this, -1)}>
-							<Image
-								style={styles.counter_button}
-								source={require('@assets/icons/minus.png')}
-							/>
-						</Pressable>
-						<View style={styles.counter_text_parent}>
-							<Text style={styles.counter_text}>{count || 0}</Text>
-						</View>
-						<Pressable onPress={this.alter.bind(this, 1)}>
-							<Image
-								style={styles.counter_button}
-								source={require('@assets/icons/plus.png')}
-							/>
-						</Pressable>
+					<View style={styles.counter_text_parent}>
+						<Text style={styles.counter_text}>{count || 0}</Text>
 					</View>
+					<Pressable onPress={alter.bind(undefined, 1)}>
+						<Image
+							style={styles.counter_button}
+							source={require('@assets/icons/plus.png')}
+						/>
+					</Pressable>
+				</View>
+				<View style={styles.bottom_container}>
 					<HMap
-						entries={data.entries[focus]}
+						entries={data.entries ? data.entries[focus] : []}
 						locationEnabled={locationEnabled}
-						request={this.requestLocation.bind(this)}
+						request={requestLocation}
 					/>
-				</SafeAreaView>
-				<PopUp ref={ref => (this._alert = ref)} />
-			</View>
-		)
-	}
+					<TimeChart entries={data.entries ? data.entries[focus] : []} />
+				</View>
+			</SafeAreaView>
+			<PopUp ref={alert} />
+		</View>
+	)
 }
 
 export default Home
@@ -198,10 +187,16 @@ const styles = StyleSheet.create({
 		width: sys_width,
 		height: sys_height,
 		backgroundColor: 'black',
+		
 	},
 	safe_container: {
 		flex: 1,
 		alignItems: 'center',
+	},
+	bottom_container: {
+		width: sys_width,
+		flexDirection: "row",
+		paddingHorizontal: 0.025 * sys_width
 	},
 	title: {
 		...getText('heavy', 0.15),

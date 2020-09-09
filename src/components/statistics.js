@@ -1,5 +1,5 @@
 import React, {useRef, useEffect, useState} from 'react'
-import {View, StyleSheet, Text} from 'react-native'
+import {View, StyleSheet, Text, InteractionManager} from 'react-native'
 import {
 	sys_width,
 	sys_height,
@@ -20,48 +20,48 @@ import {request, PERMISSIONS} from 'react-native-permissions'
 const chart_types = ['year', 'week', 'month']
 
 const Statistics = ({onChangeFocus, data}) => {
-
-	const charts = chart_types.map( _ => useRef(undefined))
+	const charts = chart_types.map(_ => useRef(undefined))
 
 	const focus = useRef(0)
 
 	const move = (alter, event) => {
-		if (event.nativeEvent.state !== State.ACTIVE) 
-			return 
-			
+		if (event.nativeEvent.state !== State.ACTIVE) return
+
 		charts.forEach(chart => chart.current.move(alter))
 
-		if (Math.abs(focus.current + alter) > 1) 
-			focus.current = -alter
+		if (Math.abs(focus.current + alter) > 1) focus.current = -alter
 		else focus.current += alter
 
-		onChangeFocus(chart_types[focus.current + 1])
+		InteractionManager.runAfterInteractions(_ =>
+			onChangeFocus(chart_types[focus.current + 1]),
+		)
 	}
 
 	return (
 		<FlingGestureHandler
-				direction={Directions.UP}
-				onHandlerStateChange={move.bind(undefined, 1)}>
-				<FlingGestureHandler
-					direction={Directions.DOWN}
-					onHandlerStateChange={move.bind(undefined, -1)}>
-					<View style={styles.container}>
-						<View style={styles.chart_container}>
-							{chart_types.map((label, index) => (
-								<Chart
-									key={index}
-									ref={charts[index]}
-									order={index - 1}
-									label={label}
-									data={data[label]}
-								/>
-							))}
-						</View>
+			direction={Directions.UP}
+			onHandlerStateChange={move.bind(undefined, 1)}>
+			<FlingGestureHandler
+				direction={Directions.DOWN}
+				onHandlerStateChange={move.bind(undefined, -1)}>
+				<View style={styles.container}>
+					<View style={styles.chart_container}>
+						{data
+							? chart_types.map((label, index) => (
+									<Chart
+										key={index}
+										ref={charts[index]}
+										order={index - 1}
+										label={label}
+										data={data[label]}
+									/>
+							  ))
+							: null}
 					</View>
-				</FlingGestureHandler>
+				</View>
 			</FlingGestureHandler>
+		</FlingGestureHandler>
 	)
-
 }
 
 export default Statistics
