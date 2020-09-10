@@ -77,6 +77,9 @@ export const getIDs = async _ =>
 export const createBucket = async label => {
 	const current_ids = await getIDs()
 
+	if(current_ids.length === 0)
+		await changeDefault(label)
+
 	current_ids.push(label)
 
 	await DefaultPreference.set('buckets', JSON.stringify(current_ids))

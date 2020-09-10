@@ -26,9 +26,11 @@ const TimeChart = ({entries}) => (
 			<Gradient />
 		</BarChart>
 		<View style={styles.labels}>
-			<Text style={styles.label}>0h</Text>
-			<Text style={styles.label}>12h</Text>
-			<Text style={styles.label}>24h</Text>
+			<Text style={styles.label}>0</Text>
+			<Text style={styles.label}>6</Text>
+			<Text style={styles.label}>12</Text>
+			<Text style={styles.label}>18</Text>
+			<Text style={styles.label}>24</Text>
 		</View>
 	</View>
 )
@@ -74,7 +76,8 @@ const styles = StyleSheet.create({
 		justifyContent: 'space-between',
 		position: 'absolute',
 		top: sys_width * 0.42,
-		paddingHorizontal: 10,
+		paddingLeft: 10,
+		paddingRight: 5
 	},
 	label: {
 		...getText('bold', 15 / sys_width),

@@ -11,7 +11,7 @@ const HMap = ({entries, locationEnabled, request}) => {
 
   const markers = entries ? entries.filter(e => e.latitude) : []
 
-  const fit = _ => map.current?.fitToCoordinates(markers)
+  const fit = _ => setTimeout( _ => map.current?.fitToCoordinates(markers), 1000)
 
   return (
     <View style={styles.container}>

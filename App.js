@@ -5,6 +5,7 @@ import {enableScreens} from 'react-native-screens'
 import {createNativeStackNavigator} from 'react-native-screens/native-stack'
 import Home from '@views/home.js'
 import Library from '@views/library.js'
+import Setup from "@views/setup.js"
 enableScreens()
 
 const Stack = createNativeStackNavigator()
@@ -16,6 +17,7 @@ const options = {
 const App = _ => (
   <NavigationContainer>
     <Stack.Navigator>
+      <Stack.Screen name="Setup" component={Setup} options={options} />
       <Stack.Screen name="Home" component={Home} options={options} />
       <Stack.Screen
         name="Library"

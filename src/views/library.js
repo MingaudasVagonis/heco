@@ -31,7 +31,7 @@ import {
 } from '@logic/buckets.js'
 import LottieView from 'lottie-react-native'
 
-const Library = ({navigate}) => {
+const Library = _ => {
 	const [label, onChangeText] = useState('')
 
 	const [selected, setSelected] = useState(-1)
