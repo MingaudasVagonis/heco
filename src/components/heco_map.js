@@ -1,17 +1,18 @@
-import React, {useState, useRef} from 'react'
+import React, {useRef} from 'react'
 import {View, StyleSheet, Text, Image, Pressable} from 'react-native'
-import {sys_width, getShadow, round_fac, getText} from '@styles'
-import {HMarker, HCluster} from './heco_marker.js'
+import {sys_width, round_fac, getText} from '@styles'
+import {HMarker} from './heco_marker.js'
 import colors from '@colors'
 import MapView from 'react-native-map-clustering'
-import {BlurView, VibrancyView} from '@react-native-community/blur'
+import {BlurView} from '@react-native-community/blur'
 
 const HMap = ({entries, locationEnabled, request}) => {
   const map = useRef(undefined)
 
   const markers = entries ? entries.filter(e => e.latitude) : []
 
-  const fit = _ => setTimeout( _ => map.current?.fitToCoordinates(markers), 1000)
+  const fit = () =>
+    setTimeout(() => map.current?.fitToCoordinates(markers), 1000)
 
   return (
     <View style={styles.container}>
@@ -108,4 +109,4 @@ const initialRegion = {
   longitudeDelta: 3,
 }
 
-const defaultMapPadding = {left: 3, bottom: 3, top: 3, bottom: 3}
+const defaultMapPadding = {left: 3, bottom: 3, top: 3, right: 3}
