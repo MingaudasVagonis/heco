@@ -36,10 +36,8 @@ const Home = ({navigation}) => {
   const [loading, setLoading] = React.useState(false)
 
   React.useEffect(() => {
-
     const handleAppStateChange = nextAppState => {
-      if (nextAppState === 'inactive') 
-        commit(bucket.current)
+      if (nextAppState === 'inactive') commit(bucket.current)
       if (nextAppState === 'active' && bucket.current)
         sync(bucket.current.counter.label)
     }
@@ -59,15 +57,13 @@ const Home = ({navigation}) => {
   const changeBucket = async () => {
     const def = await getDefault()
 
-    if (!bucket.current || def !== bucket.current.counter.label)
-      await sync(def)
+    if (!bucket.current || def !== bucket.current.counter.label) await sync(def)
   }
 
   const sync = async label => {
     setLoading(true)
 
     try {
-
       bucket.current = await getBucket(label)
 
       const _data = await sortBucket(bucket.current.counter)
@@ -131,14 +127,6 @@ const Home = ({navigation}) => {
             />
           ) : null}
         </View>
-        <Pressable style={styles.add_button} onPress={add}>
-          <View style={styles.add_button}>
-            <Image
-              style={styles.add_icon}
-              source={require('@assets/icons/icon_menu.png')}
-            />
-          </View>
-        </Pressable>
         <Statistics data={data.statistics} onChangeFocus={setFocus} />
         <View style={styles.action_container}>
           <Pressable onPress={alter.bind(undefined, -1)}>
@@ -166,6 +154,14 @@ const Home = ({navigation}) => {
           <TimeChart entries={data.entries ? data.entries[focus] : []} />
         </View>
       </SafeAreaView>
+      <Pressable style={styles.add_button} onPress={add}>
+        <View style={styles.add_button}>
+          <Image
+            style={styles.add_icon}
+            source={require('@assets/icons/icon_menu.png')}
+          />
+        </View>
+      </Pressable>
       <PopUp ref={alert} />
     </View>
   )
@@ -180,8 +176,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'black',
   },
   safe_container: {
-    flex: 1,
     alignItems: 'center',
+    paddingBottom: sys_width * 0.12 + sys_height * 0.05,
   },
   bottom_container: {
     width: sys_width,
@@ -215,8 +211,8 @@ const styles = StyleSheet.create({
   add_button: {
     width: sys_width,
     backgroundColor: colors.darkest,
-    paddingTop: styles_width * 0.07,
-    paddingBottom: styles_width * 0.09,
+    paddingTop: Math.min(sys_height * 0.02, sys_width * 0.03),
+    paddingBottom: Math.min(sys_height * 0.03, sys_width * 0.05),
     borderTopLeftRadius: round_fac * 20,
     borderTopRightRadius: round_fac * 20,
     position: 'absolute',

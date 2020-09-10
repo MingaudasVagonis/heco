@@ -1,6 +1,6 @@
 import React from 'react'
 import {View, StyleSheet, Text} from 'react-native'
-import {sys_width, getText, round_fac} from '@styles'
+import {sys_width, getText, round_fac, sys_height} from '@styles'
 import colors from '@colors'
 import moment from 'moment'
 import {BarChart} from 'react-native-svg-charts'
@@ -9,7 +9,7 @@ import {Defs, LinearGradient, Stop} from 'react-native-svg'
 const TimeChart = ({entries}) => (
   <View style={styles.chart_parent}>
     <BarChart
-      style={{height: 200}}
+      style={{height: "110%"}}
       data={groupEntries(entries)}
       svg={{fill: 'url(#gradient)'}}
       spacingInner={0.15}
@@ -54,19 +54,21 @@ const groupEntries = entries => {
 
 const ranges = Array.from({length: 12}, (_, i) => i * 2)
 
+const height = Math.min(sys_width * 0.5, sys_height * 0.23)
+
 const styles = StyleSheet.create({
   chart_parent: {
     borderRadius: 25 * round_fac,
     backgroundColor: colors.darkest,
     flex: 1,
-    height: sys_width * 0.5,
+    height
   },
   labels: {
     flexDirection: 'row',
     width: '100%',
     justifyContent: 'space-between',
     position: 'absolute',
-    top: sys_width * 0.42,
+    bottom: 10,
     paddingLeft: 10,
     paddingRight: 5,
   },

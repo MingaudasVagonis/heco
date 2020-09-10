@@ -1,6 +1,6 @@
 import React, {useRef} from 'react'
 import {View, StyleSheet, InteractionManager} from 'react-native'
-import {sys_width, round_fac, styles_width} from '@styles'
+import {sys_width, round_fac, styles_width, sys_height} from '@styles'
 import {
   FlingGestureHandler,
   Directions,
@@ -73,6 +73,6 @@ const styles = StyleSheet.create({
   chart_container: {
     borderRadius: 25 * round_fac,
     overflow: 'hidden',
-    height: 265,
+    height: Math.min(0.7 * styles_width, sys_height * 0.35),
   },
 })

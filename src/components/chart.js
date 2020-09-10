@@ -1,7 +1,7 @@
 import React from 'react'
 import {StyleSheet, Text, Animated} from 'react-native'
 import {LineChart} from 'react-native-chart-kit'
-import {sys_width, getText, round_fac, styles_width} from '@styles'
+import {sys_width, getText, round_fac, styles_width, sys_height} from '@styles'
 import LinearGradient from 'react-native-linear-gradient'
 import colors from '@colors'
 import moment from 'moment'
@@ -83,7 +83,7 @@ class Chart extends React.Component {
               fromZero={true}
               transparent={true}
               width={sys_width}
-              height={220}
+              height={chart_size}
               chartConfig={{
                 decimalPlaces: 0,
                 color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
@@ -124,7 +124,9 @@ const getLabel = (label, data) => {
   }
 }
 
-const chart_height = 220 + 0.12 * styles_width
+const chart_size = Math.min(0.7 * styles_width, sys_height * 0.35) - sys_width * 0.12
+
+const chart_height = Math.min(0.7 * styles_width, sys_height * 0.35)
 
 const styles = StyleSheet.create({
   chart_parent: {

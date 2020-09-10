@@ -1,6 +1,6 @@
 import React, {useRef} from 'react'
 import {View, StyleSheet, Text, Image, Pressable} from 'react-native'
-import {sys_width, round_fac, getText} from '@styles'
+import {sys_width, round_fac, getText, sys_height} from '@styles'
 import {HMarker} from './heco_marker.js'
 import colors from '@colors'
 import MapView from 'react-native-map-clustering'
@@ -57,11 +57,10 @@ export default HMap
 
 const styles = StyleSheet.create({
   container: {
-    //width: sys_width * 0.95,
     flex: 1,
     marginRight: 0.025 * sys_width,
     borderRadius: round_fac * 25,
-    height: sys_width * 0.5,
+    height: Math.min(sys_width * 0.5, sys_height * 0.23),
   },
   map: {
     borderRadius: round_fac * 22,
