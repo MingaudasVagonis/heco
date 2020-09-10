@@ -20,7 +20,7 @@ import {
 import colors from '@colors'
 import LinearGradient from 'react-native-linear-gradient'
 import Tile from '@components/tile.js'
-import {lightVibrate} from '@logic/device.js'
+import {vibrate} from '@logic/device.js'
 import PopUp from '@components/popup.js'
 import {
   createBucket,
@@ -42,7 +42,7 @@ const Library = () => {
 
   const onSelect = async index => {
     if (await changeDefault(counters[index].label)) {
-      lightVibrate()
+      vibrate()
 
       setSelected(index)
     }
@@ -76,7 +76,7 @@ const Library = () => {
         return
       }
 
-      lightVibrate()
+      vibrate()
 
       await createBucket(label)
 

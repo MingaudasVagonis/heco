@@ -11,7 +11,7 @@ import {
 } from 'react-native'
 import {sys_width, sys_height, getText, styles_width, round_fac} from '@styles'
 import colors from '@colors'
-import {lightVibrate} from '@logic/device'
+import {vibrate} from '@logic/device'
 import Statistics from '@components/statistics'
 import {getBucket, sortBucket, update, commit, getDefault} from '@logic/buckets'
 import HMap from '@components/heco_map.js'
@@ -67,6 +67,7 @@ const Home = ({navigation}) => {
     setLoading(true)
 
     try {
+
       bucket.current = await getBucket(label)
 
       const _data = await sortBucket(bucket.current.counter)
@@ -82,13 +83,13 @@ const Home = ({navigation}) => {
   const add = () => {
     commit(bucket.current)
 
-    lightVibrate()
+    vibrate()
 
     navigation.navigate('Library')
   }
 
   const requestLocation = () => {
-    lightVibrate()
+    vibrate()
 
     phCheckAndRequest(
       'LOCATION',
@@ -102,7 +103,7 @@ const Home = ({navigation}) => {
       return
     }
 
-    lightVibrate()
+    vibrate()
 
     const updated = await update(data, bucket.current.counter, moment(), change)
 

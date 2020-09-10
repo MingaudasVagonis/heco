@@ -63,9 +63,7 @@ export const sortBucket = async bucket => {
 }
 
 export const commit = bucket => {
-  if (!bucket) {
-    return
-  }
+  if (!bucket) return
 
   DefaultPreference.set(bucket.counter.label, JSON.stringify(bucket.counter))
 }
@@ -76,14 +74,13 @@ export const update = async (data, bucket, date, change) =>
     : await _deduct(data, bucket, date)
 
 export const getIDs = async _ =>
-  JSON.parse((await DefaultPreference.get('buckets')) || '[]')
+  JSON.parse((await DefaultPreference.get('buckets')) || '[]').filter(Boolean)
 
 export const createBucket = async label => {
   const current_ids = await getIDs()
 
-  if (current_ids.length === 0) {
-    await changeDefault(label)
-  }
+  if (current_ids.length === 0) 
+   await changeDefault(label)
 
   current_ids.push(label)
 
@@ -108,9 +105,8 @@ export const changeDefault = async ndef => {
 }
 
 const _deduct = async (data, bucket, date) => {
-  for (const key in data.entries) {
+  for (const key in data.entries)
     data.entries[key].pop()
-  }
 
   _alter(data, date, -1)
 
@@ -135,9 +131,8 @@ const _flattenEntries = entries => ({
 const _add = async (data, bucket, date) => {
   const entry = await _createEntry()
 
-  for (const key in data.entries) {
+  for (const key in data.entries)
     data.entries[key].push(entry)
-  }
 
   _alter(data, date, 1)
 

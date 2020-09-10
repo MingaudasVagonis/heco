@@ -19,10 +19,11 @@ import {
 } from '@styles'
 import colors from '@colors'
 import LinearGradient from 'react-native-linear-gradient'
-import {lightVibrate, phCheckAndRequest} from '@logic/device.js'
+import {vibrate, phCheckAndRequest} from '@logic/device.js'
 import PopUp from '@components/popup.js'
 import {createBucket} from '@logic/buckets.js'
 import LottieView from 'lottie-react-native'
+import {add} from "@logic/device.js"
 
 const Setup = ({navigation}) => {
   const [label, onChangeText] = useState('')
@@ -30,7 +31,7 @@ const Setup = ({navigation}) => {
   const popup = useRef(undefined)
 
   const enableLocation = () => {
-    lightVibrate()
+    vibrate()
 
     phCheckAndRequest('LOCATION', undefined, msg =>
       popup.current?.call('error', msg),
@@ -38,7 +39,7 @@ const Setup = ({navigation}) => {
   }
 
   const proceed = async () => {
-    lightVibrate()
+    vibrate()
 
     if (!label || label.length < 3) {
       popup.current?.call('error', "Counter's label is invalid")
@@ -46,7 +47,8 @@ const Setup = ({navigation}) => {
     }
 
     try {
-      await createBucket()
+      await createBucket(label)
+      await add("setup", true)
     } catch {
       popup.current?.call('error', 'Failed to create the counter')
       return
