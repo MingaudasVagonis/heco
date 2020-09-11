@@ -21,10 +21,12 @@ const HMap = ({entries, locationEnabled, request}) => {
   *
   * @param {number} [duration = 1000] - Delay
   */
-  const fit = (duration = 1000) =>
-    setTimeout(() => map.current?.fitToCoordinates(markers), duration)
+  const fit = (duration = 1000) => {
+    if(markers.length > 0)
+      map.current?.fitToCoordinates(markers)
+  }
 
-  React.useEffect( () => { fit(100) })
+  fit()
 
   return (
     <View style={styles.container}>
