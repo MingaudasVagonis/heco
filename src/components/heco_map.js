@@ -16,9 +16,15 @@ const HMap = ({entries, locationEnabled, request}) => {
 
   const markers = entries ? entries.filter(e => e.latitude) : []
 
-  /* Function to fit into markers after the map has loaded */
-  const fit = () =>
-    setTimeout(() => map.current?.fitToCoordinates(markers), 1000)
+  /**
+  * Function to fit into markers after the map has loaded 
+  *
+  * @param {number} [duration = 1000] - Delay
+  */
+  const fit = (duration = 1000) =>
+    setTimeout(() => map.current?.fitToCoordinates(markers), duration)
+
+  React.useEffect( () => { fit(100) })
 
   return (
     <View style={styles.container}>
