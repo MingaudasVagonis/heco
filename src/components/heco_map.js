@@ -18,10 +18,8 @@ const HMap = ({entries, locationEnabled, request}) => {
 
   /**
   * Function to fit into markers after the map has loaded 
-  *
-  * @param {number} [duration = 1000] - Delay
   */
-  const fit = (duration = 1000) => {
+  const fit = () => {
     if(markers.length > 0)
       map.current?.fitToCoordinates(markers)
   }
