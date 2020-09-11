@@ -6,6 +6,38 @@ import moment from 'moment'
 import {BarChart} from 'react-native-svg-charts'
 import {Defs, LinearGradient, Stop} from 'react-native-svg'
 
+/**
+ * Groups all the entries by time into chunks of 2 hours
+ *
+ * @param {array} entries - Array of entries
+ * @returns {array}
+ */
+const groupEntries = entries => {
+
+  const times = entries.map(entry => {
+    /* Sometimes timestamp comes in float form (?) that needs 
+       to be multiplied by 1000 */
+    const stamp = entry.time % 1 === 0 ? entry.time : entry.time * 1000
+    /* Returning the hour */
+    return parseInt(moment(stamp).format('HH'))
+  })
+
+  /* Grouping into groups of 2 hours */
+  const grouped = times.reduce((acc, val) => {
+    let index = val - (val % 2)
+    acc[index] = (acc[index] || 0) + 1
+    return acc
+  }, {})
+
+  /* Filling the gaps that have no entries with 0 */
+  return Array.from({length: 12}, (_, i) => grouped[ranges[i]] || 0)
+}
+
+/**
+ * Component that displays entries' spread over time
+ * 
+ * @component
+ */
 const TimeChart = ({entries}) => (
   <View style={styles.chart_parent}>
     <BarChart
@@ -36,21 +68,6 @@ const Gradient = () => (
 )
 
 export default TimeChart
-
-const groupEntries = entries => {
-  const times = entries.map(entry => {
-    const stamp = entry.time % 1 === 0 ? entry.time : entry.time * 1000
-    return parseInt(moment(stamp).format('HH'))
-  })
-
-  const grouped = times.reduce((acc, val) => {
-    let index = val - (val % 2)
-    acc[index] = (acc[index] || 0) + 1
-    return acc
-  }, {})
-
-  return Array.from({length: 12}, (_, i) => grouped[ranges[i]] || 0)
-}
 
 const ranges = Array.from({length: 12}, (_, i) => i * 2)
 

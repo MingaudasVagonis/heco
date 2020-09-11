@@ -31,7 +31,14 @@ import {
 } from '@logic/buckets.js'
 import LottieView from 'lottie-react-native'
 
+/**
+ * Library view
+ * 
+ * @component
+ */
 const Library = () => {
+
+  /* TODO: useReducer ? */
   const [label, onChangeText] = useState('')
 
   const [selected, setSelected] = useState(-1)
@@ -40,6 +47,11 @@ const Library = () => {
 
   const popup = useRef(undefined)
 
+  /**
+   * Selects the counter as default
+   *
+   * @param {number} index - Index of the counter
+   */
   const onSelect = async index => {
     if (await changeDefault(counters[index].label)) {
       vibrate()
@@ -49,11 +61,15 @@ const Library = () => {
   }
 
   useEffect(() => {
+    /**
+     * Fetches all the counter
+     */
     const fetch = async () => {
       const _counters = await getCounters()
 
       const selectedLabel = await getDefault()
 
+      /* Finds the index of the default counter */
       setSelected(_counters.findIndex(c => c.label === selectedLabel))
 
       setCounters(_counters)
@@ -62,7 +78,11 @@ const Library = () => {
     fetch()
   }, [])
 
+  /**
+   * Creates a new counter
+   */
   const addCounter = async () => {
+    /* Label must be at least 3 chars long */
     if (!label || label.length < 3) {
       popup.current?.call('error', "Counter's label is invalid")
       return
@@ -80,8 +100,10 @@ const Library = () => {
 
       await createBucket(label)
 
+      /* Adding new counter's tile */
       setCounters(counters.concat({label, count: 0}))
 
+      /* Reseting the input */
       onChangeText('')
     } catch (err) {
       console.log(err)
@@ -138,9 +160,8 @@ const Library = () => {
 }
 
 const renderCounters = (counters, selected, onSelect) => {
-  if (counters.length === 0) {
+  if (counters.length === 0)
     return
-  }
 
   return counters.map((counter, index) => (
     <Tile

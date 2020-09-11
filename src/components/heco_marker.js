@@ -5,6 +5,11 @@ import PropTypes from 'prop-types'
 import colors from '@colors'
 import {getText} from '@styles'
 
+/**
+ * Custom marker component
+ * 
+ * @component
+ */
 const HMarker = ({clickMarker, coordinate}) => {
   const [tracks, setTracks] = useState(true)
 
@@ -23,6 +28,11 @@ const HMarker = ({clickMarker, coordinate}) => {
   )
 }
 
+/**
+ * Custom marker cluster component
+ * 
+ * @component
+ */
 const HCluster = () => (
   <ImageBackground
     source={require('@assets/icons/marker.png')}

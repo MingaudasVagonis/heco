@@ -39,6 +39,11 @@ const status = {
 
 const Gradient = Animated.createAnimatedComponent(LinearGradient)
 
+/**
+ * Component that displays alerts on top of the content
+ * 
+ * @component
+ */
 class PopUp extends React.Component {
   constructor(props) {
     super(props)
@@ -51,6 +56,11 @@ class PopUp extends React.Component {
     this._scale = new Animated.Value(0)
   }
 
+  /**
+   * Hides the popup
+   *
+   * @private
+   */
   hide() {
     Animated.spring(this._scale, {
       duration: 300,
@@ -65,21 +75,25 @@ class PopUp extends React.Component {
   }
 
   componentWillUnmount() {
-    if (this._timeout) {
-      clearTimeout(this._timeout)
-    }
+    clearTimeout(this._timeout)
   }
 
+  /**
+   * Call the popup 
+   *
+   * @param {string} type - Popup type
+   * @param {string} text - Text to display
+   * @public
+   */
   call(type, text) {
-    if (this._timeout) {
-      clearTimeout(this._timeout)
-    }
+    clearTimeout(this._timeout)
 
     this.setState({
       status: status[type],
       text,
     })
 
+    /* Vibrate according to type */
     vibrate(status[type].haptic)
 
     Animated.spring(this._scale, {
@@ -88,12 +102,18 @@ class PopUp extends React.Component {
       toValue: 1,
       useNativeDriver: true,
     }).start(done => {
+      /* To prevent finishing after already unmounted */
       if (done.finished) {
         this._timeout = setTimeout(this.hide.bind(this), this.state.status.time)
       }
     })
   }
 
+  /**
+   * Returns dynamic style
+   *
+   * @private
+   */
   _get_scale = () => ({
     transform: [
       {
@@ -108,9 +128,9 @@ class PopUp extends React.Component {
   render() {
     const {text, status} = this.state
 
-    if (!status.main) {
+    /* Before the first call */
+    if (!status.main)
       return <View />
-    }
 
     return (
       <Gradient

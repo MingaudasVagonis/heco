@@ -11,6 +11,11 @@ import {sys_width, round_fac, getText, getShadow, gradient} from '@styles'
 import colors from '@colors'
 import LinearGradient from 'react-native-linear-gradient'
 
+/**
+ * Component that represents a counter in the library
+ * 
+ * @component
+ */
 const Tile = ({order, counter, selected, onSelect}) => {
   const left = order % 2 === 0
 
@@ -24,6 +29,9 @@ const Tile = ({order, counter, selected, onSelect}) => {
     }).start()
   })
 
+  /**
+   * Returns dynamic style
+   */
   const getStyle = () => ({
     marginRight: left ? 0.05 * sys_width : 0,
     opacity: anim,

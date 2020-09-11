@@ -22,10 +22,18 @@ import LottieView from 'lottie-react-native'
 import {useFocusEffect} from '@react-navigation/native'
 import TimeChart from '@components/time_chart.js'
 
+/**
+ * Home view
+ * 
+ * @component
+ */
 const Home = ({navigation}) => {
+
+  /* TODO: merge bucket with data in the state */
   const bucket = React.useRef(undefined)
   const alert = React.useRef(undefined)
 
+  /* TODO: useReducer ? */
   const [locationEnabled, setLocationEnabled] = React.useState(false)
   const [{data, count}, setCounterData] = React.useState({
     data: {},
@@ -37,35 +45,51 @@ const Home = ({navigation}) => {
 
   React.useEffect(() => {
     const handleAppStateChange = nextAppState => {
+      /* Saving the updated bucket when app goes into background */
       if (nextAppState === 'inactive') commit(bucket.current)
+
+      /* Updating the bucket in case it was changed in a widget */
       if (nextAppState === 'active' && bucket.current)
         sync(bucket.current.counter.label)
     }
 
     AppState.addEventListener('change', handleAppStateChange)
+
     requestLocation()
 
     return () => AppState.removeEventListener('change', handleAppStateChange)
   }, [])
 
+  /* Checking if the default counter has not changed 
+     when the view comes back into focus */
   useFocusEffect(
     React.useCallback(() => {
-      changeBucket()
+      checkBucket()
     }, []),
   )
 
-  const changeBucket = async () => {
+  /**
+   * Checks whether the default bucket has changed
+   */
+  const checkBucket = async () => {
     const def = await getDefault()
 
-    if (!bucket.current || def !== bucket.current.counter.label) await sync(def)
+    if (!bucket.current || def !== bucket.current.counter.label) 
+      await sync(def)
   }
 
+  /**
+   * Syncs the bucket with the component
+   *
+   * @param {string} label - Label of the counter
+   */
   const sync = async label => {
     setLoading(true)
 
     try {
       bucket.current = await getBucket(label)
 
+      /* Getting refactored bucket data */
       const _data = await sortBucket(bucket.current.counter)
 
       setCounterData({data: _data, count: bucket.current.today})
@@ -76,7 +100,10 @@ const Home = ({navigation}) => {
     }
   }
 
-  const add = () => {
+  /**
+   * Navigates to the Library view
+   */
+  const library = () => {
     commit(bucket.current)
 
     vibrate()
@@ -84,20 +111,28 @@ const Home = ({navigation}) => {
     navigation.navigate('Library')
   }
 
+  /**
+   * Checks and requests location
+   */
   const requestLocation = () => {
     vibrate()
 
     phCheckAndRequest(
       'LOCATION',
+      /* Disabling map overlay */
       () => setLocationEnabled(true),
       msg => alert.current?.call('error', msg),
     )
   }
 
+  /**
+   * Increases / decreases the count of today
+   * 
+   * @param {number} alter - Amount to change the counter
+   */
   const alter = async change => {
-    if (count + change < 0 || !bucket.current) {
+    if (count + change < 0 || !bucket.current)
       return
-    }
 
     vibrate()
 
@@ -154,7 +189,7 @@ const Home = ({navigation}) => {
           <TimeChart entries={data.entries ? data.entries[focus] : []} />
         </View>
       </SafeAreaView>
-      <Pressable style={styles.add_button} onPress={add}>
+      <Pressable style={styles.add_button} onPress={library}>
         <View style={styles.add_button}>
           <Image
             style={styles.add_icon}

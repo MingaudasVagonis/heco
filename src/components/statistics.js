@@ -11,25 +11,37 @@ import Chart from './chart.js'
 
 const chart_types = ['year', 'week', 'month']
 
+/**
+ * Component that houses all the charts
+ * 
+ * @component
+ */
 const Statistics = ({onChangeFocus, data}) => {
   const charts = chart_types.map(() => useRef(undefined))
 
   const focus = useRef(0)
 
+  /**
+   * Moves all the charts in either direction
+   *
+   * @param {number} alter - Either -1 or 1 according to direction
+   * @param {event}  event - Gesture event
+   */
   const move = (alter, event) => {
-    if (event.nativeEvent.state !== State.ACTIVE) {
+
+    if (event.nativeEvent.state !== State.ACTIVE)
       return
-    }
 
     charts.forEach(chart => chart.current.move(alter))
 
-    if (Math.abs(focus.current + alter) > 1) {
+    /* Preventing going outside the bounds */
+    if (Math.abs(focus.current + alter) > 1)
       focus.current = -alter
-    } else {
-      focus.current += alter
-    }
+    else focus.current += alter
 
-    InteractionManager.runAfterInteractions(_ =>
+    /* Running the callback after all the charts' animations
+       have finished to prevent frame drops (animations freeze) */
+    InteractionManager.runAfterInteractions( _ =>
       onChangeFocus(chart_types[focus.current + 1]),
     )
   }

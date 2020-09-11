@@ -6,11 +6,17 @@ import colors from '@colors'
 import MapView from 'react-native-map-clustering'
 import {BlurView} from '@react-native-community/blur'
 
+/**
+ * Component that displays entries on a  clustered map
+ * 
+ * @component
+ */
 const HMap = ({entries, locationEnabled, request}) => {
   const map = useRef(undefined)
 
   const markers = entries ? entries.filter(e => e.latitude) : []
 
+  /* Function to fit into markers after the map has loaded */
   const fit = () =>
     setTimeout(() => map.current?.fitToCoordinates(markers), 1000)
 

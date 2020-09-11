@@ -25,11 +25,19 @@ import {createBucket} from '@logic/buckets.js'
 import LottieView from 'lottie-react-native'
 import {add} from "@logic/device.js"
 
+/**
+ * Setup view
+ * 
+ * @component
+ */
 const Setup = ({navigation}) => {
   const [label, onChangeText] = useState('')
 
   const popup = useRef(undefined)
 
+  /**
+   * Requests location
+   */
   const enableLocation = () => {
     vibrate()
 
@@ -38,9 +46,13 @@ const Setup = ({navigation}) => {
     )
   }
 
+  /**
+   * Saves and proceeds to the Home view
+   */
   const proceed = async () => {
     vibrate()
 
+    /* Label must be at least 3 chars long */
     if (!label || label.length < 3) {
       popup.current?.call('error', "Counter's label is invalid")
       return
@@ -48,6 +60,7 @@ const Setup = ({navigation}) => {
 
     try {
       await createBucket(label)
+      /* Marking that the setup has completed */
       await add("setup", true)
     } catch {
       popup.current?.call('error', 'Failed to create the counter')

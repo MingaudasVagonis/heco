@@ -6,7 +6,13 @@ import LinearGradient from 'react-native-linear-gradient'
 import colors from '@colors'
 import moment from 'moment'
 
+/**
+ * Chart for one period
+ * 
+ * @component
+ */
 class Chart extends React.Component {
+  
   constructor(props) {
     super(props)
 
@@ -19,6 +25,11 @@ class Chart extends React.Component {
     }
   }
 
+  /**
+   * Returns dynamic style
+   *
+   * @private
+   */
   _pos() {
     return {
       opacity: this.state.opacity,
@@ -44,18 +55,23 @@ class Chart extends React.Component {
     }
   }
 
+  /**
+   * Moves chart in either direction
+   *
+   * @param {number} alter - Amount to alter the position
+   * @public
+   */
   move(alter) {
     this._order = this._order - alter
 
+    /* If new position exceeds bounds */
     if (Math.abs(this._order) > 1) {
       this._order = alter
       this._anim.setValue(this._order)
-    } else {
-      Animated.spring(this._anim, {
+    } else Animated.spring(this._anim, {
         useNativeDriver: false,
         toValue: this._order,
       }).start()
-    }
   }
 
   render() {
@@ -69,6 +85,7 @@ class Chart extends React.Component {
           {data ? (
             <LineChart
               style={{
+                /* Month labels need's more space to the left */
                 marginLeft:
                   label === 'month' ? -0.08 * sys_width : -0.05 * sys_width,
               }}
@@ -105,12 +122,13 @@ class Chart extends React.Component {
 
 export default Chart
 
-const titles = {
-  year: 'This Year',
-  month: moment().format('MMMM'),
-  week: 'This Week',
-}
-
+/**
+ * Returns labels for the x axis
+ *
+ * @param {string} label - Chart's label
+ * @param {object} data  - Chart's data
+ * @returns {array}
+ */
 const getLabel = (label, data) => {
   switch (label) {
     case 'year':
@@ -122,6 +140,12 @@ const getLabel = (label, data) => {
     default:
       return ['M', 'T', 'W', 'T', 'F', 'S', 'S']
   }
+}
+
+const titles = {
+  year: 'This Year',
+  month: moment().format('MMMM'),
+  week: 'This Week',
 }
 
 const chart_size = Math.min(0.7 * styles_width, sys_height * 0.35) - sys_width * 0.12
