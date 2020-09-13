@@ -179,7 +179,7 @@ export default Library
 const styles = StyleSheet.create({
   container: {
     width: sys_width,
-    height: sys_height,
+    height: sys_height * 0.935,
     backgroundColor: '#111111',
     alignItems: 'center',
   },
